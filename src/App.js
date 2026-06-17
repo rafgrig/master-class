@@ -1,25 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { styles } from "./Constants"
+import masterClassLogo from "./Asets/masterClassLogo.png"
+import Header from "./Header";
+import MenuNav from "./MenuNav";
 
-function App() {
+
+export default function App() {
+  const [search, setSearch] = useState("");
+  const [isMenuNav, setIsMenuNav] = useState(false)
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Header setSearch={setSearch} setIsMenuNav={setIsMenuNav} />
+      <MenuNav isMenuNav={isMenuNav} />
+    </>
+
   );
 }
-
-export default App;
