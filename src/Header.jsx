@@ -1,12 +1,25 @@
 import { useState } from "react";
 import { styles } from "./Constants"
+import { signOut } from "firebase/auth";
 import masterClassLogo from "./Asets/masterClassLogo.png"
 import FilterPopUp from "./FilterPopUp";
 import AuthForm from "./Auth/AuthForm";
+import { auth } from "./firestore";
 
-export default function Header({ setSearch, setIsMenuNav }) {
+export default function Header({ setSearch, setIsMenuNav, setUser }) {
     const [isFilterPopUp, setIsFilterPopUp] = useState(false)
     const [isAuthForm, setIsAuthForm] = useState(false)
+    const [authPage, setAuthPage] = useState("login")
+
+    const onAuth = function () {
+        if (auth.currentUser) {
+            setAuthPage("logout")
+            setIsAuthForm((prev) => !prev);
+        } else {
+            setAuthPage("login")
+            setIsAuthForm((prev) => !prev);
+        }
+    };
 
     return (
         <header style={styles.header}>
@@ -53,16 +66,14 @@ export default function Header({ setSearch, setIsMenuNav }) {
                 <FilterPopUp isActive={isFilterPopUp} />
 
                 {/* Log In Button */}
-                <button style={styles.navBtn} aria-label="Log in" onClick={() => { setIsAuthForm((prev) => !prev) }}>
+                <button style={styles.navBtn} aria-label="Log in" onClick={onAuth}>
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
                     </svg>
-                    <span style={styles.navBtnLabel}>Log in / Register</span>
+                    <span style={styles.navBtnLabel}>{auth.currentUser ? "Log Out" : "Log In / Register"}</span>
                 </button>
 
-                {/* <div style={{ display: 'flex', justifyContent: "center", alignContent: "center" }}> */}
-                <AuthForm isActive={isAuthForm} />
-                {/* </div> */}
+                <AuthForm page={authPage} setPage={setAuthPage} isActive={isAuthForm} setUser={setUser} setIsAuthForm={setIsAuthForm} />
 
                 {/* Fav Button */}
                 <button style={styles.navBtn} aria-label="Favourites">

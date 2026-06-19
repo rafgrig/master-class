@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { db, auth } from "../firestore";
+import { doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
-export default function Register({ setPage }) {
+
+export default function Register({ setPage, setUser, setIsAuthForm }) {
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -9,12 +13,33 @@ export default function Register({ setPage }) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const createUser = async (userId, userData) => {
+        try {
+            await setDoc(doc(db, "users", userId), userData)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     function handleRegister() {
         if (password !== confirmPassword) {
             alert("Passwords do not match!");
             return;
+        } else {
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    setUser(user)
+                    return createUser(user.uid, { 'email': email, "name": name, "cart": [], "fav": [] })
+
+                }).catch((error) => {
+                    console.log(error.code, error.message);
+                });
+
+            if (email || password) setIsAuthForm(false)
+
         }
-        console.log("Name:", name, "Email:", email, "Password:", password);
     }
 
     function handleGoogle() {

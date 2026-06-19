@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firestore";
 // import closedEye from "./Asets/closed-eye.png" // ts is not working try another one later
 // import openedEye from "./Asets/opened-eye.png" // ts is not working try another one later
 
-export default function LogIn({ setPage }) {
+export default function LogIn({ setPage, setUser, setIsAuthForm }) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -10,7 +12,18 @@ export default function LogIn({ setPage }) {
     // const width = screen.width;
 
     function handleLogin() {
-        console.log("Email:", email, "Password:", password);
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                setUser(user)
+                // console.log(user.uid)
+            })
+            .catch((error) => {
+                console.log(error.messege)
+            });
+
+        if (email || password) setIsAuthForm(false)
+
     }
 
     function handleGoogle() {
