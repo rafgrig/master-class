@@ -31,7 +31,7 @@ export default function Register({ setPage, setUser, setIsAuthForm }) {
                 .then((userCredential) => {
                     const user = userCredential.user;
                     setUser(user)
-                    return createUser(user.uid, { 'email': email, "name": name, "cart": [], "fav": [] })
+                    return createUser(user.uid, { 'email': email, "name": name, "cart": [], "fav": [], "role": "user" })
 
                 }).catch((error) => {
                     console.log(error.code, error.message);

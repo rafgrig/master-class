@@ -1,14 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styles } from "./Constants"
-import { signOut } from "firebase/auth";
+// import { signOut } from "firebase/auth";
 import masterClassLogo from "./Asets/masterClassLogo.png"
 import FilterPopUp from "./FilterPopUp";
 import AuthForm from "./Auth/AuthForm";
-import { auth } from "./firestore";
+import { auth, db } from "./firestore";
+import { doc, getDoc } from "firebase/firestore"
+import { onAuthStateChanged } from 'firebase/auth';
+import AdminPage from "./Auth/AdminPage";
 
 export default function Header({ setSearch, setIsMenuNav, setUser }) {
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (!currentUser) {
+                setRole("user");  // 👈 when logged out, reset role immediately
+                return;
+            }
+
+            const userRef = doc(db, "users", currentUser.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+                setRole(userSnap.data().role);
+            } else {
+                setRole("user");
+            }
+        });
+
+        return () => unsubscribe(auth.currentUser);
+    }, []);
+
+    const [role, setRole] = useState("user")
     const [isFilterPopUp, setIsFilterPopUp] = useState(false)
     const [isAuthForm, setIsAuthForm] = useState(false)
+    const [isAdminPage, setIsAdminPage] = useState(false)
     const [authPage, setAuthPage] = useState("login")
 
     const onAuth = function () {
@@ -21,11 +47,12 @@ export default function Header({ setSearch, setIsMenuNav, setUser }) {
         }
     };
 
+
     return (
         <header style={styles.header}>
             {/* Logo */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-                <img style={{ height: "50px" }} src={masterClassLogo} />
+                <img alt="home page" style={{ height: "50px" }} src={masterClassLogo} />
             </div>
 
             {/* Menu */}
@@ -56,6 +83,7 @@ export default function Header({ setSearch, setIsMenuNav, setUser }) {
 
             {/* Filter Button */}
             <div style={styles.navActions}>
+
                 <button style={styles.navBtn} aria-label="Filter" onClick={() => { setIsFilterPopUp((prev) => !prev) }}>
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="11" y1="18" x2="13" y2="18" />
@@ -75,6 +103,16 @@ export default function Header({ setSearch, setIsMenuNav, setUser }) {
 
                 <AuthForm page={authPage} setPage={setAuthPage} isActive={isAuthForm} setUser={setUser} setIsAuthForm={setIsAuthForm} />
 
+                {/* Admin Panel */}
+                <button style={{ ...styles.navBtn, display: role === "admin" ? "flex" : "none" }} aria-label="Admin" onClick={() => { setIsAdminPage((prev) => (!prev)) }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span style={styles.navBtnLabel}>{"Admin"}</span>
+                </button>
+
+                <AdminPage isActive={isAdminPage} />
+
                 {/* Fav Button */}
                 <button style={styles.navBtn} aria-label="Favourites">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -90,6 +128,7 @@ export default function Header({ setSearch, setIsMenuNav, setUser }) {
                     </svg>
                     <span style={styles.navBtnLabel}>Cart</span>
                 </button>
+
             </div>
 
         </header>

@@ -1,22 +1,28 @@
-// import { useState } from "react";
-// import { doc, getDoc } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-import { auth } from "../firestore";
+import { auth, db } from "../firestore";
 export default function LogOut({ setIsAuthForm }) {
 
-    // const [name, setName] = useState("")
-    // const [email, setEmail] = useStae("")
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
 
-    // async function handleUserInfo() {
+    useEffect(() => {
+        async function handleUserInfo() {
+            if (!auth.currentUser) return;
 
-    //     const userRef = doc(db, "users", auth.currentUser.uid);
-    //     const userSnap = await getDoc(userRef);
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            const userSnap = await getDoc(userRef);
 
-    //     if (userSnap.exists()) {
-    //         setName(userSnap.data().name);
-    //         setEmail(userSnap.data().email)
-    //     }
-    // }
+            if (userSnap.exists()) {
+                setName(userSnap.data().name);
+                setEmail(userSnap.data().email);
+            }
+        }
+
+        handleUserInfo();
+    }, []);
+
 
     async function handleLogOut() {
         await signOut(auth);
@@ -27,7 +33,6 @@ export default function LogOut({ setIsAuthForm }) {
     function handleCancel() {
         setIsAuthForm(false)
     }
-
 
     return (
         <div style={{
@@ -42,19 +47,22 @@ export default function LogOut({ setIsAuthForm }) {
             padding: "32px 24px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
         }}>
-
-
-
             {/* User Info */}
-            {/* <h2 style={{ fontSize: 20, fontWeight: 700, textAlign: "center", marginBottom: 4 }}> */}
-            {/* {name}
+            <h2 style={{ fontSize: 20, fontWeight: 700, textAlign: "center", marginBottom: 4 }}>
+                {name}
             </h2>
-            <p style={{ fontSize: 13, color: "#888", textAlign: "center", marginBottom: 24 }}>
-                {email}
-            </p> */}
 
+            <p style={{ fontSize: 13, color: "#888", textAlign: "center" }}>
+                {email}
+            </p>
+
+            <span style={{ position: "absolute", left: "25%", fontSize: 12, color: "#888", textAlign: "center", marginBottom: "20px" }}>
+                {auth.currentUser?.uid}
+            </span>
+
+            <br></br>
             {/* Divider */}
-            <div style={{ height: 1, background: "#eee", marginBottom: 24 }} />
+            <div style={{ height: 1, background: "#c9c9c9", marginBottom: 10, marginTop: 20 }} />
 
             {/* Question */}
             <p style={{ fontSize: 15, color: "#333", textAlign: "center", marginBottom: 24 }}>
