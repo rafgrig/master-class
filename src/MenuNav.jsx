@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { categories } from "./Constants";
+
 export default function MenuNav({ isMenuNav }) {
 
     const [active, setActive] = useState("");
@@ -15,7 +16,8 @@ export default function MenuNav({ isMenuNav }) {
     }
 
     return (
-        <div style={{ display: isMenuNav ? "block" : "none", width: 220, background: "#fff", borderRight: "1px solid #ddd", minHeight: "100vh" }}>
+        <div style={{ display: isMenuNav ? "block" : "none", width: 220, background: "#fff", borderRight: "1px solid #ddd", minHeight: "100vh", position: "absolute", top: 65, left: -4 }}>
+
 
             {/* Close Button */}
             {/* <div style={{ display: "flex", justifyContent: "flex-end", padding: "8px 10px" }}>

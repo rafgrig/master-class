@@ -1,4 +1,3 @@
-import { useState } from "react";
 // import closedEye from "./Asets/closed-eye.png" // ts is not working try another one later
 // import openedEye from "./Asets/opened-eye.png" // ts is not working try another one later
 import LogIn from "./LogIn";

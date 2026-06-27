@@ -7,9 +7,10 @@ import AuthForm from "./Auth/AuthForm";
 import { auth, db } from "./firestore";
 import { doc, getDoc } from "firebase/firestore"
 import { onAuthStateChanged } from 'firebase/auth';
-import AdminPage from "./Auth/AdminPage";
+import AdminPage from "./AdminPage";
+import MenuNav from "./MenuNav";
 
-export default function Header({ setSearch, setIsMenuNav, setUser }) {
+export default function Header({ setSearch, setUser }) {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -36,6 +37,8 @@ export default function Header({ setSearch, setIsMenuNav, setUser }) {
     const [isAuthForm, setIsAuthForm] = useState(false)
     const [isAdminPage, setIsAdminPage] = useState(false)
     const [authPage, setAuthPage] = useState("login")
+    const [isMenuNav, setIsMenuNav] = useState(false)
+
 
     const onAuth = function () {
         if (auth.currentUser) {
@@ -64,6 +67,8 @@ export default function Header({ setSearch, setIsMenuNav, setUser }) {
                 </button>
                 <div style={styles.menuLabel}>Menu</div>
             </div>
+
+            <MenuNav isMenuNav={isMenuNav} />
 
             {/* Search */}
             <div style={styles.searchWrap}>
